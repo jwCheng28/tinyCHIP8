@@ -1,0 +1,32 @@
+Specification:
+Memory 
+    - 4kB RAM
+    - program starts at 0x200
+Display
+    - 64x32 pixels (w x h)
+    - boolean
+    - sprites are 8 bits wide and 1 to 15 bytes tall
+    - drawn through xor logic
+Program Counter 
+    - 16 bit (only need to access up to 12 bits)
+    - cur instruction
+I index register
+    - 16 bit register (only need to access up to 12 bits)
+    - points loc in mem
+Stack 
+    - 16 bit SP
+    - 16 2 bytes mem
+Timer
+    - 8 bit
+    - decrements at 60Hz to 0
+    - 2 Timers
+        - Delay Timer
+        - Sound Timer, beeps at non 0
+General Purpose Register
+    - 8 bit
+    - 16 registers
+        - V0 to VF
+Font
+    - hex 0 to F
+    - 4x5 pixels (w x h)
+    - locate at 0x050 to 0x09f
