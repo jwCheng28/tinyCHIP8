@@ -50,25 +50,6 @@ int8_t init_display(Display* display) {
     return 0;
 }
 
-uint16_t keymap[16][2] = {
-    {SDL_SCANCODE_1, 0x0},
-    {SDL_SCANCODE_2, 0x1},
-    {SDL_SCANCODE_3, 0x2},
-    {SDL_SCANCODE_4, 0x3},
-    {SDL_SCANCODE_Q, 0x4},
-    {SDL_SCANCODE_W, 0x5},
-    {SDL_SCANCODE_E, 0x6},
-    {SDL_SCANCODE_R, 0x7},
-    {SDL_SCANCODE_A, 0x8},
-    {SDL_SCANCODE_S, 0x9},
-    {SDL_SCANCODE_D, 0xA},
-    {SDL_SCANCODE_F, 0xB},
-    {SDL_SCANCODE_Z, 0xC},
-    {SDL_SCANCODE_X, 0xD},
-    {SDL_SCANCODE_C, 0xE},
-    {SDL_SCANCODE_V, 0xF}
-};
-
 void set_keypad_chip8(uint8_t* keypad, uint16_t scancode, uint8_t val) {
     if (scancode == SDL_SCANCODE_1) keypad[0] = val;
     else if (scancode == SDL_SCANCODE_2) keypad[1] = val;
