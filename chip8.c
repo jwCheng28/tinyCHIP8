@@ -3,27 +3,26 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MEMSIZE 4096
-#define DISPWIDTH 64
-#define DISPHEIGHT 32
-#define DISPSIZE DISPWIDTH * DISPHEIGHT
-#define PROGSTART 0x0200
+#include "chip8.h"
 
-typedef struct {
-    uint8_t memory[MEMSIZE];
-    uint32_t display[DISPSIZE];
-    uint16_t pc;
-    uint16_t index;
-    uint16_t stack[16];
-    uint16_t sp;
-    uint8_t delay_timer;
-    uint8_t sound_timer;
-    uint8_t registers[16];
-} Chip8;
-
-uint16_t fetch(Chip8* chip) {
-    return (chip->memory[chip->pc++] << 8) + chip->memory[chip->pc++];
-}
+uint8_t fontset[FONTSETSIZE] = {
+    0xf0, 0x90, 0x90, 0x90, 0xf0,
+    0x20, 0x60, 0x20, 0x20, 0x70,
+    0xf0, 0x10, 0xf0, 0x80, 0xf0,
+    0xf0, 0x10, 0xf0, 0x10, 0xf0,
+    0x90, 0x90, 0xf0, 0x10, 0x10,
+    0xf0, 0x80, 0xf0, 0x10, 0xf0,
+    0xf0, 0x80, 0xf0, 0x90, 0xf0,
+    0xf0, 0x10, 0x20, 0x40, 0x40,
+    0xf0, 0x90, 0xf0, 0x90, 0xf0,
+    0xf0, 0x90, 0xf0, 0x10, 0xf0,
+    0xf0, 0x90, 0xf0, 0x90, 0x90,
+    0xe0, 0x90, 0xe0, 0x90, 0xe0,
+    0xf0, 0x80, 0x80, 0x80, 0xf0,
+    0xe0, 0x90, 0x90, 0x90, 0xe0,
+    0xf0, 0x80, 0xf0, 0x80, 0xf0,
+    0xf0, 0x80, 0xf0, 0x80, 0x80
+};
 
 void jump(Chip8* chip, uint16_t opcode) {
     chip->pc = opcode & 0x0FFF;
@@ -125,18 +124,18 @@ void draw(Chip8* chip, uint16_t opcode) {
             byte <<= 1;
         }
     }
+}
 
-    for (int i = 0; i < DISPHEIGHT; ++i) {
-        for (int j = 0; j < DISPWIDTH; ++j) {
-            if (chip->display[i*DISPWIDTH + j]) printf("*");
-            else printf(" ");
-        }
-        printf("\n");
-    }
+void skip_if_key(Chip8* chip, uint16_t opcode) {
+    uint8_t rx = chip->registers[(opcode & 0x0F00) >> 8] % DISPWIDTH;
+    if ( ((opcode & 0x00FF) == 0x9E && rx) || ((opcode & 0x00FF) == 0xA1 && !rx) ) chip->pc += 2; 
+}
+
+uint16_t fetch(Chip8* chip) {
+    return (chip->memory[chip->pc++] << 8) + chip->memory[chip->pc++];
 }
 
 void decode_and_exec(Chip8* chip, uint16_t opcode) {
-    // printf("pc=%x, op=%x\n", chip->pc, opcode);
     if ((opcode & 0xFF0F) == 0x0000) memset(chip->display, 0, DISPSIZE * 4);
     if ((opcode & 0xFF00) == 0x0000) {}
     if ((opcode & 0xF000) == 0x0000) {}
@@ -153,8 +152,14 @@ void decode_and_exec(Chip8* chip, uint16_t opcode) {
     if ((opcode & 0xF000) == 0xB000) relative_jump(chip, opcode);
     if ((opcode & 0xF000) == 0xC000) {}
     if ((opcode & 0xF000) == 0xD000) draw(chip, opcode);
-    if ((opcode & 0xF000) == 0xE000) {}
+    if ((opcode & 0xF000) == 0xE000) skip_if_key(chip, opcode);
     if ((opcode & 0xF000) == 0xF000) {}
+}
+
+void load_font(Chip8* chip) {
+    for (uint16_t i = 0; i < FONTSETSIZE; ++i) {
+        chip->memory[FONTSETSTART + i] = fontset[i];
+    }
 }
 
 void init_chip(Chip8* chip) {
@@ -162,11 +167,13 @@ void init_chip(Chip8* chip) {
     memset(chip->display, 0, DISPSIZE * 4);
     memset(chip->stack, 0, 16);
     memset(chip->registers, 0, 16);
+    memset(chip->keypad, 0, 16);
     chip->pc = PROGSTART;
     chip->index = 0x00;
     chip->sp = 0x00;
     chip->delay_timer = 0x00;
     chip->sound_timer = 0x00;
+    load_font(chip);
 }
 
 void load_program(Chip8* chip, FILE* program) {
@@ -175,26 +182,4 @@ void load_program(Chip8* chip, FILE* program) {
     fseek(program, 0, SEEK_SET);
 
     fread(chip->memory + PROGSTART, filesize, 1, program);
-}
-
-void run_program(Chip8* chip) {
-    while (chip->pc < MEMSIZE) {
-        decode_and_exec(chip, fetch(chip));
-    }
-}
-
-int main(int argc, char** argv) {
-    if (argc < 2) {
-        printf("Not enought arguments!\nQuiting\n");
-        return 0;
-    }
-    Chip8* chip = malloc(sizeof(Chip8));
-    init_chip(chip);
-    FILE* program = fopen(argv[1], "rb");
-    load_program(chip, program);
-    run_program(chip);
-
-    free(chip);
-    fclose(program);
-    return 0;
 }
