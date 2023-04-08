@@ -21,26 +21,27 @@ int main(int argc, char** argv) {
         printf("Not enought arguments!\nQuiting\n");
         return 0;
     }
-    Chip8* chip = malloc(sizeof(Chip8));
-    init_chip(chip);
+    FILE* program = fopen(argv[1], "rb");
 
     Display* display = create_display(640, 1280, 32, 64);
-    init_display(display);
+    Chip8* chip = create_chip();
 
-    FILE* program = fopen(argv[1], "rb");
     load_program(chip, program);
 
     while (1) {
-        int8_t key_status = manage_key_press(display, chip->keypad);
-        if (key_status == 1 || key_status < 0) break;
-        if (chip->pc >= MEMSIZE) break;
-        decode_and_exec(chip, fetch(chip));
-        update_display(display, chip->display);
-        milli_delay(50);
+        if (manage_key_press(display, chip->keypad) == QUIT) break;
+        if (cycle(chip) == ERR_PC_OUT_OF_RANGE) break;
+        // debug_print(chip);
+        if (chip->draw_f) {
+            update_display(display, chip->display);
+            chip->draw_f = 0x00;
+        }
+        milli_delay(5);
     }
 
     delete_display(display);
-    free(chip);
+    delete_chip(chip);
     fclose(program);
+
     return 0;
 }
