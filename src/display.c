@@ -17,6 +17,11 @@ Display* create_display(uint16_t win_h, uint16_t win_w, uint16_t img_h, uint16_t
     display->image_width = img_w;
     display->image_height = img_h;
 
+    if (init_display(display) < 0) {
+        free(display);
+        return NULL;
+    }
+
     return display;
 }
 
