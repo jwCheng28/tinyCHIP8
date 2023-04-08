@@ -10,5 +10,8 @@ exe_file = emu.exe
 $(exe_file): src/*.c
 	$(CC) $(BUILD_FLAGS) $(WINDOWS) src/*.c -o $(exe_file) $(SDL_FLAGS)
 
+debug: src/*.c
+	$(CC) $(DEBUG_FLAGS) $(WINDOWS) src/*.c -o $(exe_file) $(SDL_FLAGS)
+
 cleanw:
 	del /Q *.o $(exe_file)
