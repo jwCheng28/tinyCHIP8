@@ -17,6 +17,18 @@ Given these requirements are met, code could be compile by running `mingw32-make
 
 Then, a CHIP-8 program binary could runned using `emu.exe [insert program name]` in the terminal.
 
+## Demo
+Example of working ROMs:
+
+Space Invaders
+
+<img src="img/space_invader.png" width="480">
+
+Tetris
+
+<img src="img/tetris.png" width="480">
+
+
 ## Reference Documentation
 [CHIP-8 Technical Reference](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#memmap)
 
