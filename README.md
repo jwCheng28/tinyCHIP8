@@ -4,8 +4,8 @@ This project is an attempt to create an emulator for [CHIP-8](https://en.wikiped
 
 ## Current Progress
 
-- Most instructions are implemented except 0xFX-- & 0xCXNN
-- Able successfully run and display binary program that doesn't require those unimplemented instructions
+- All modern instructions are implemented (with the modern definition)
+- Able successfully run and display binary program (tested with running CHIP8 ROM)
 
 ## How to run
 This code currently only supports windows.
