@@ -1,6 +1,8 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
+#define QUIT 1
+
 typedef struct {
     SDL_Window* window;
     SDL_Renderer* renderer;
