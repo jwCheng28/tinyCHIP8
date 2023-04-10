@@ -31,7 +31,7 @@ int8_t init_display(Display* display) {
         return -1;
     } 
 
-    display->window = SDL_CreateWindow("Test SDL", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
+    display->window = SDL_CreateWindow("CHIP8 Emulator", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
                                         display->window_width, display->window_height, SDL_WINDOW_SHOWN);
     if (display->window < 0) {
         printf("Window could not be created. Error: %s\n", SDL_GetError());
